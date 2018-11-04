@@ -1,9 +1,8 @@
 import socket
 import sys
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
-import urllib2
-from BaseHTTPServer import HTTPServer
-from SimpleHTTPServer import SimpleHTTPRequestHandler
+import urllib3
 
 
 def get_ip():
@@ -19,10 +18,10 @@ def get_ip():
 
 
 def HandlrFactory(server_address):
-    class Handlr(SimpleHTTPRequestHandler):
+    class Handlr(BaseHTTPRequestHandler):
         def __init__(self, request, client_address, server):
             self.server_address = server_address
-            SimpleHTTPRequestHandler.__init__(self, request, client_address, server)
+            BaseHTTPRequestHandler.__init__(self, request, client_address, server)
 
         def _set_headers(self):
             self.send_response(200)
@@ -32,17 +31,16 @@ def HandlrFactory(server_address):
         def do_GET(self):
             if self.path == "/":
                 self._set_headers()
-                self.wfile.write("chronos is timeless, client {}".format(get_ip()))
+                self.wfile.write(bytes("chronos is timeless, client {}".format(get_ip()), "UTF-8"))
                 return
             if self.path == "/health-check":
                 self._set_headers()
                 return
             elif self.path == "/remote":
                 self._set_headers()
-                req = urllib2.Request('http://{}:3001'.format(self.server_address))
-                response = urllib2.urlopen(req)
-                content = response.read()
-                self.wfile.write(content)
+                http = urllib3.PoolManager()
+                response = http.request("GET", 'http://{}:3001'.format(self.server_address))
+                self.wfile.write(response.data)
                 return
             else:
                 self.send_error(404)

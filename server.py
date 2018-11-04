@@ -1,6 +1,5 @@
 import socket
-from BaseHTTPServer import HTTPServer
-from SimpleHTTPServer import SimpleHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
 
 def get_ip():
@@ -15,7 +14,7 @@ def get_ip():
     return ip
 
 
-class MyHandler(SimpleHTTPRequestHandler):
+class MyHandler(BaseHTTPRequestHandler):
 
     def _set_headers(self):
         self.send_response(200)
@@ -28,7 +27,7 @@ class MyHandler(SimpleHTTPRequestHandler):
             return
         elif self.path == "/":
             self._set_headers()
-            self.wfile.write("chronos is timeless, server {}".format(get_ip()))
+            self.wfile.write(bytes("chronos is timeless, server {}".format(get_ip()), "UTF-8"))
             return
         else:
             self.send_error(404)

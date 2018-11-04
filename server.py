@@ -38,5 +38,5 @@ class MyHandler(BaseHTTPRequestHandler):
 
 
 if __name__ == '__main__':
-    server = HTTPServer(('127.0.0.1', 3001), MyHandler)
+    server = HTTPServer(('0.0.0.0', 3001), MyHandler)
     server.serve_forever()

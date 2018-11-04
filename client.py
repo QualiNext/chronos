@@ -53,5 +53,5 @@ def HandlrFactory(server_address):
 
 
 if __name__ == '__main__':
-    client = HTTPServer(('127.0.0.1', 3000), HandlrFactory(sys.argv[1]))
+    client = HTTPServer(('0.0.0.0', 3000), HandlrFactory(sys.argv[1]))
     client.serve_forever()
